@@ -1,0 +1,16 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\FlightDocSystem",
+    "\\FlightDocSystem\\FlightDocSystem",
+    "\\FlightDocSystem\\FlightDocSystem\\Controllers",
+    "\\FlightDocSystem\\FlightDocSystem\\Models",
+    "\\FlightDocSystem\\FlightDocSystem\\obj",
+    "\\FlightDocSystem\\FlightDocSystem\\obj\\Release",
+    "\\FlightDocSystem\\FlightDocSystem\\obj\\Release\\net6.0\\ref",
+    "\\FlightDocSystem\\FlightDocSystem\\obj\\Release\\net6.0\\refint",
+    "\\FlightDocSystem\\FlightDocSystem\\Properties"
+  ],
+  "SelectedNode": "\\FlightDocSystem",
+  "PreviewInSolutionExplorer": false
+}
