@@ -1,4 +1,5 @@
 using FlightDocSystem.Models;
+using FlightDocSystem.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace FlightDocSystem
@@ -10,16 +11,20 @@ namespace FlightDocSystem
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-
             builder.Services.AddControllers();
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            // Register database
             builder.Services.AddDbContext<FlightDocsContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("FlightDocSystem"));
             });
+
+            // DI
+            builder.Services.AddScoped<IGroupService, GroupService>();
 
             var app = builder.Build();
 

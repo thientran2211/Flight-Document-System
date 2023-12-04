@@ -7,6 +7,6 @@
         public bool? Captcha { get; set; }
         public int UserID { get; set; }
 
-        public UserDTO userDTO { get; set; }
+        public UserDTO? userDTO { get; set; }
     }
 }

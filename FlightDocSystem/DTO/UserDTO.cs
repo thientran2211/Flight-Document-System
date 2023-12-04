@@ -12,6 +12,5 @@ namespace FlightDocSystem.DTO
         public string? Password { get; set; }
         public int Phone { get; set; }
         public string? Role { get; set; }
-        public Group? Group { get; set; }
     }
 }
