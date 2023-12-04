@@ -1,12 +1,12 @@
-﻿namespace FlightDocSystem.Models
+﻿namespace FlightDocSystem.DTO
 {
-    public class Setting
+    public class SettingDTO
     {
-        public int Id { get; set; }
         public int Theme { get; set; }
         public string? Logo { get; set; }
         public bool? Captcha { get; set; }
         public int UserID { get; set; }
-        public User? User { get; set; }
+
+        public UserDTO userDTO { get; set; }
     }
 }

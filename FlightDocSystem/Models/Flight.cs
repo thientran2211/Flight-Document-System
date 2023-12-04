@@ -9,6 +9,5 @@
         public string? Route { get; set; }
         public int UserID { get; set; }
         public User User { get; set; }
-        public ICollection<Document> documents { get; set; }
     }
 }
