@@ -56,7 +56,7 @@ namespace FlightDocSystem.Controllers
             }
             await _iGroupService.UpdateGroupAsync(id, group);
 
-            return Ok();
+            return Ok(await _context.Groups.ToListAsync());
         }
 
         [HttpDelete]
@@ -68,7 +68,7 @@ namespace FlightDocSystem.Controllers
 
             await _iGroupService.DeleteGroupAsync(id);
 
-            return Ok();
+            return Ok(await _context.Groups.ToListAsync());
         }
     }
 }
