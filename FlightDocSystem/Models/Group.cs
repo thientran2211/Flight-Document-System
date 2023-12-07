@@ -9,6 +9,7 @@ namespace FlightDocSystem.Models
         public DateTime? CreateDate { get; set; }
         public int NumberOfUser { get; set; }
         public int PermissionID { get; set; }
-        public ICollection<User> Users { get; set; }
+
+        //public ICollection<User> Users { get; set; }
     }
 }

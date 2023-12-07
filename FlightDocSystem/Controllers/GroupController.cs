@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using FlightDocSystem.Models;
 using Microsoft.EntityFrameworkCore;
 using FlightDocSystem.DTO;
+using System.Data.Entity;
 
 namespace FlightDocSystem.Controllers
 {
@@ -10,26 +11,24 @@ namespace FlightDocSystem.Controllers
     [ApiController]
     public class GroupController : Controller
     {
-        private readonly IGroupService _iGroupService;
-        private readonly FlightDocsContext _context;
+        private readonly IGroupService _groupService;
 
-        public GroupController(IGroupService iGroup, FlightDocsContext context)
+        public GroupController(IGroupService groupService)
         {
-            _iGroupService = iGroup;
-            _context = context;
+            _groupService = groupService;
         }
 
-
         [HttpGet]
-        public async Task<IActionResult> GetGroups()
+        public async Task<IActionResult> GetGroupList()
         {
-            return Ok(await _iGroupService.GetGroupsAsync());
+
+            return Ok(await _groupService.GetGroupsAsync());
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetGroupByID(int id)
         {
-            var group = await _iGroupService.GetGroupByIdAsync(id);
+            var group = await _groupService.GetGroupByIdAsync(id);
             if (group == null)
             {
                 return BadRequest("Group not found.");
@@ -37,38 +36,70 @@ namespace FlightDocSystem.Controllers
             return Ok(group);
         }
 
+        // API endpoint to Create Group
         [HttpPost]
-        public async Task<IActionResult> AddNewGroup(Group group)
+        public async Task<IActionResult> Create([FromBody] GroupDTO groupDTO)
         {
-            _context.Groups.Add(group);
-            await _context.SaveChangesAsync();
-
-            return Ok(await _context.Groups.ToListAsync());
-        }
-
-        [HttpPut]
-        public async Task<IActionResult> UpdateGroup(int id, GroupDTO group)
-        {
-            var existingGroup = await _context.Groups.FindAsync(id);
-            if (existingGroup== null)
+            try
             {
-                return BadRequest("Group not found.");
-            }
-            await _iGroupService.UpdateGroupAsync(id, group);
+                if (ModelState.IsValid)
+                {
+                    await _groupService.AddGroupAsync(groupDTO);
+                    return Ok("Thêm dữ liệu thành công!");
+                }
 
-            return Ok(await _context.Groups.ToListAsync());
+                return BadRequest("Dữ liệu không hợp lệ.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Lỗi nội bộ: {ex.Message}");
+            }
         }
 
-        [HttpDelete]
-        public async Task<IActionResult> DeleteGroup(int id)
+        // API endpoint to Update
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] GroupDTO groupDTO)
         {
-            var group = _context.Groups.SingleOrDefaultAsync(g => g.GroupID == id);
-            if (group == null)
-                return BadRequest("Group not found.");
+            try
+            {
+                if (await _groupService.GroupExistsAsync(id))
+                {
+                    await _groupService.UpdateGroupAsync(id, groupDTO);
+                    return Ok("Cập nhật dữ liệu thành công!");
+                }
+                else
+                {
+                    return NotFound("Không tìm thấy nhóm với Id đã cho");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Lỗi nội bộ: {ex.Message}");
+            }
+        }
 
-            await _iGroupService.DeleteGroupAsync(id);
-
-            return Ok(await _context.Groups.ToListAsync());
+        // API endpoint để Delete Group
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                if (await _groupService.GroupExistsAsync(id))
+                {
+                    await _groupService.DeleteGroupAsync(id);
+                    return Ok("Xóa nhóm thành công!");
+                }
+                else
+                {
+                    return NotFound("Không tìm thấy nhóm với Id đã cho.");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Lỗi nội bộ: {ex.Message}");
+            }
         }
     }
 }
+
+

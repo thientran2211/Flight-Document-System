@@ -1,6 +1,7 @@
 using FlightDocSystem.Models;
 using FlightDocSystem.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace FlightDocSystem
 {
@@ -20,12 +21,13 @@ namespace FlightDocSystem
             // Register database
             builder.Services.AddDbContext<FlightDocsContext>(options =>
             {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("FlightDocSystem"));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
 
             // DI
             builder.Services.AddScoped<IGroupService, GroupService>();
 
+           
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

@@ -7,8 +7,9 @@ namespace FlightDocSystem.Services
     {
         public Task<List<Group>> GetGroupsAsync();
         public Task<Group> GetGroupByIdAsync(int id);
-        public Task<int> AddGroupAsync(GroupDTO group);
-        public Task UpdateGroupAsync(int id, GroupDTO group);
-        public Task DeleteGroupAsync(int id);
+        public Task AddGroupAsync(GroupDTO groupDTO);
+        public Task UpdateGroupAsync(int groupID, GroupDTO groupDTO);
+        public Task DeleteGroupAsync(int groupID);
+        Task<bool> GroupExistsAsync(int groupId);
     }
 }

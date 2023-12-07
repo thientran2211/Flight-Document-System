@@ -9,5 +9,7 @@ namespace FlightDocSystem.DTO
 
         [Required]
         public int PermissionID { get; set; }
+
+        public int NumberOfUser { get; set; }
     }
 }

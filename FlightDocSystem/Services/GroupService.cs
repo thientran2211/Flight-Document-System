@@ -8,24 +8,24 @@ namespace FlightDocSystem.Services
     {
         private readonly FlightDocsContext context;
 
-        public GroupService(FlightDocsContext context) 
+        public GroupService(FlightDocsContext context)
         {
             this.context = context;
         }
 
-        public async Task<int> AddGroupAsync(GroupDTO groupDTO)
+        public async Task AddGroupAsync(GroupDTO groupDTO)
         {
             var group = new Group
             {
                 GroupName = groupDTO.GroupName,
                 PermissionID = groupDTO.PermissionID,
+                NumberOfUser = groupDTO.NumberOfUser,
                 CreateDate = DateTime.Now
             };
 
             context.Groups.Add(group);
-            await context.SaveChangesAsync();
 
-            return group.GroupID;
+            await context.SaveChangesAsync();
         }
 
         public async Task<List<Group>> GetGroupsAsync()
@@ -36,7 +36,7 @@ namespace FlightDocSystem.Services
 
         public async Task<Group> GetGroupByIdAsync(int id)
         {
-           
+
             var groups = await context.Groups.FindAsync(id);
             if (groups == null)
             {
@@ -45,27 +45,39 @@ namespace FlightDocSystem.Services
             return groups;
         }
 
-        public async Task UpdateGroupAsync(int id, GroupDTO group)
+        public async Task UpdateGroupAsync(int groupId, GroupDTO groupDTO)
         {
-            var existingGroup = await context.Groups.FindAsync(id);
-            if (existingGroup != null) 
+            var existingGroup = await context.Groups.FirstOrDefaultAsync(g => g.GroupID == groupId);
+            if (existingGroup != null)
             {
-                existingGroup.GroupName = group.GroupName;
-                existingGroup.CreateDate= DateTime.Now;
-                existingGroup.PermissionID= group.PermissionID;
+                existingGroup.GroupName = groupDTO.GroupName;
+                existingGroup.PermissionID = groupDTO.PermissionID;
+                existingGroup.NumberOfUser = groupDTO.NumberOfUser;
+                existingGroup.CreateDate = DateTime.Now;
                 context.Groups.Update(existingGroup);
+
                 await context.SaveChangesAsync();
             }
         }
 
-        public async Task DeleteGroupAsync(int id)
+        public async Task DeleteGroupAsync(int groupId)
         {
-            var existingGroup = context.Groups!.SingleOrDefault(g => g.GroupID == id);
-            if (existingGroup != null)
+            if (await GroupExistsAsync(groupId))
             {
-                context.Groups.Remove(existingGroup);
-                await context.SaveChangesAsync();
+                var groupToDelete = await context.Groups.FindAsync(groupId);
+
+                if (groupToDelete != null)
+                {
+                    context.Groups.Remove(groupToDelete);
+                    await context.SaveChangesAsync();
+                }
+
             }
+        }
+
+        public async Task<bool> GroupExistsAsync(int groupId)
+        {
+            return await context.Groups.AnyAsync(g => g.GroupID == groupId);
         }
     }
 }

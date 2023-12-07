@@ -4,6 +4,7 @@ namespace FlightDocSystem.Models
 {
     public class FlightDocsContext : DbContext
     {
+        
         public FlightDocsContext(DbContextOptions<FlightDocsContext> options) : base(options) 
         {
             
@@ -20,5 +21,7 @@ namespace FlightDocSystem.Models
         public DbSet<Permission> Permissions { get; set; }
 
         public DbSet<Setting> Settings { get; set; }
+
+        
     }
 }
