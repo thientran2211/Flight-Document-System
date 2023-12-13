@@ -48,6 +48,9 @@ namespace FlightDocSystem.Migrations
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("UserID")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("Version")
                         .HasColumnType("decimal(18,2)");
 
@@ -55,7 +58,9 @@ namespace FlightDocSystem.Migrations
 
                     b.HasIndex("FlightID");
 
-                    b.ToTable("Documents");
+                    b.HasIndex("UserID");
+
+                    b.ToTable("Document");
                 });
 
             modelBuilder.Entity("FlightDocSystem.Models.Flight", b =>
@@ -78,14 +83,9 @@ namespace FlightDocSystem.Migrations
                     b.Property<string>("Route")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UserID")
-                        .HasColumnType("int");
-
                     b.HasKey("FlightID");
 
-                    b.HasIndex("UserID");
-
-                    b.ToTable("Flights");
+                    b.ToTable("Flight");
                 });
 
             modelBuilder.Entity("FlightDocSystem.Models.Group", b =>
@@ -112,7 +112,7 @@ namespace FlightDocSystem.Migrations
 
                     b.HasIndex("PermissionID");
 
-                    b.ToTable("Groups");
+                    b.ToTable("Group");
                 });
 
             modelBuilder.Entity("FlightDocSystem.Models.Permission", b =>
@@ -128,7 +128,23 @@ namespace FlightDocSystem.Migrations
 
                     b.HasKey("PermissionID");
 
-                    b.ToTable("Permissions");
+                    b.ToTable("Permission");
+                });
+
+            modelBuilder.Entity("FlightDocSystem.Models.Role", b =>
+                {
+                    b.Property<int>("RoleId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RoleId"), 1L, 1);
+
+                    b.Property<string>("RoleName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("RoleId");
+
+                    b.ToTable("Roles");
                 });
 
             modelBuilder.Entity("FlightDocSystem.Models.Setting", b =>
@@ -153,7 +169,8 @@ namespace FlightDocSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserID");
+                    b.HasIndex("UserID")
+                        .IsUnique();
 
                     b.ToTable("Settings");
                 });
@@ -166,11 +183,13 @@ namespace FlightDocSystem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserID"), 1L, 1);
 
+                    b.Property<int>("DocumentID")
+                        .HasColumnType("int");
+
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("GroupID")
+                    b.Property<int>("GroupID")
                         .HasColumnType("int");
 
                     b.Property<string>("Password")
@@ -179,8 +198,8 @@ namespace FlightDocSystem.Migrations
                     b.Property<int>("Phone")
                         .HasColumnType("int");
 
-                    b.Property<string>("Role")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("RoleID")
+                        .HasColumnType("int");
 
                     b.Property<string>("UserName")
                         .HasColumnType("nvarchar(max)");
@@ -189,45 +208,42 @@ namespace FlightDocSystem.Migrations
 
                     b.HasIndex("GroupID");
 
+                    b.HasIndex("RoleID");
+
                     b.ToTable("Users");
                 });
 
             modelBuilder.Entity("FlightDocSystem.Models.Document", b =>
                 {
                     b.HasOne("FlightDocSystem.Models.Flight", "Flight")
-                        .WithMany("documents")
+                        .WithMany()
                         .HasForeignKey("FlightID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("FlightDocSystem.Models.User", null)
+                        .WithMany("Documents")
+                        .HasForeignKey("UserID");
+
                     b.Navigation("Flight");
-                });
-
-            modelBuilder.Entity("FlightDocSystem.Models.Flight", b =>
-                {
-                    b.HasOne("FlightDocSystem.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("FlightDocSystem.Models.Group", b =>
                 {
-                    b.HasOne("FlightDocSystem.Models.Permission", null)
+                    b.HasOne("FlightDocSystem.Models.Permission", "Permission")
                         .WithMany("Groups")
                         .HasForeignKey("PermissionID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Permission");
                 });
 
             modelBuilder.Entity("FlightDocSystem.Models.Setting", b =>
                 {
                     b.HasOne("FlightDocSystem.Models.User", "User")
-                        .WithMany("Settings")
-                        .HasForeignKey("UserID")
+                        .WithOne("Setting")
+                        .HasForeignKey("FlightDocSystem.Models.Setting", "UserID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -237,20 +253,20 @@ namespace FlightDocSystem.Migrations
             modelBuilder.Entity("FlightDocSystem.Models.User", b =>
                 {
                     b.HasOne("FlightDocSystem.Models.Group", "Group")
+                        .WithMany()
+                        .HasForeignKey("GroupID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FlightDocSystem.Models.Role", "Role")
                         .WithMany("Users")
-                        .HasForeignKey("GroupID");
+                        .HasForeignKey("RoleID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Group");
-                });
 
-            modelBuilder.Entity("FlightDocSystem.Models.Flight", b =>
-                {
-                    b.Navigation("documents");
-                });
-
-            modelBuilder.Entity("FlightDocSystem.Models.Group", b =>
-                {
-                    b.Navigation("Users");
+                    b.Navigation("Role");
                 });
 
             modelBuilder.Entity("FlightDocSystem.Models.Permission", b =>
@@ -258,9 +274,16 @@ namespace FlightDocSystem.Migrations
                     b.Navigation("Groups");
                 });
 
+            modelBuilder.Entity("FlightDocSystem.Models.Role", b =>
+                {
+                    b.Navigation("Users");
+                });
+
             modelBuilder.Entity("FlightDocSystem.Models.User", b =>
                 {
-                    b.Navigation("Settings");
+                    b.Navigation("Documents");
+
+                    b.Navigation("Setting");
                 });
 #pragma warning restore 612, 618
         }

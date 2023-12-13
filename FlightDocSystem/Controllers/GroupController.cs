@@ -3,10 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using FlightDocSystem.Models;
 using Microsoft.EntityFrameworkCore;
 using FlightDocSystem.DTO;
-using System.Data.Entity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FlightDocSystem.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class GroupController : Controller

@@ -22,6 +22,7 @@ namespace FlightDocSystem.Models
 
         public DbSet<Setting> Settings { get; set; }
 
+        public DbSet<Role> Roles { get; set; }
         
     }
 }

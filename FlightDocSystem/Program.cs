@@ -1,7 +1,14 @@
+using FlightDocSystem.Constants;
+using FlightDocSystem.Contexts;
+using FlightDocSystem.DTO;
 using FlightDocSystem.Models;
 using FlightDocSystem.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace FlightDocSystem
 {
@@ -24,9 +31,27 @@ namespace FlightDocSystem
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
 
-            // DI
-            builder.Services.AddScoped<IGroupService, GroupService>();
+            // Configuration from Appsettings
+            builder.Services.Configure<JWT>(builder.Configuration.GetSection("JWT"));
 
+            // Adding Authentication - JWT
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = builder.Configuration["JWT:Issuer"],
+                    ValidAudience = builder.Configuration["JWT:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"]))
+                };
+            });
+
+            // Dependency Injection
+            builder.Services.AddScoped<IGroupService, GroupService>();
+            builder.Services.AddScoped<IUserService, UserService>();
            
             var app = builder.Build();
 
@@ -39,12 +64,14 @@ namespace FlightDocSystem
 
             app.UseHttpsRedirection();
 
-            app.UseAuthorization();
+            app.UseAuthentication();
 
+            app.UseAuthorization();
 
             app.MapControllers();
 
             app.Run();
-        }
+
+        }       
     }
 }

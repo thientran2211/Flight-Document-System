@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 namespace FlightDocSystem.Services
 {
     public class GroupService : IGroupService
-    {
+    {    
         private readonly FlightDocsContext context;
-
+        
         public GroupService(FlightDocsContext context)
         {
             this.context = context;

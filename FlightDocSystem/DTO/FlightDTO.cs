@@ -10,7 +10,5 @@ namespace FlightDocSystem.DTO
         public DateTime? ArrivalTime { get; set; }
         public string Route { get; set; } = string.Empty;
         public int UserID { get; set; }
-        public User User { get; set; }
-        public ICollection<Document> documents { get; set; }
     }
 }
