@@ -6,8 +6,7 @@ using FlightDocSystem.DTO;
 using Microsoft.AspNetCore.Authorization;
 
 namespace FlightDocSystem.Controllers
-{
-    [Authorize]
+{  
     [Route("api/[controller]")]
     [ApiController]
     public class GroupController : Controller
@@ -39,7 +38,7 @@ namespace FlightDocSystem.Controllers
 
         // API endpoint to Create Group
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] GroupDTO groupDTO)
+        public async Task<IActionResult> Create(GroupDTO groupDTO)
         {
             try
             {
@@ -59,7 +58,7 @@ namespace FlightDocSystem.Controllers
 
         // API endpoint to Update
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] GroupDTO groupDTO)
+        public async Task<IActionResult> Update(int id, GroupDTO groupDTO)
         {
             try
             {
@@ -80,6 +79,7 @@ namespace FlightDocSystem.Controllers
         }
 
         // API endpoint để Delete Group
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

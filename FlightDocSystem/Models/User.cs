@@ -7,34 +7,37 @@ using Microsoft.AspNetCore.Identity;
 
 namespace FlightDocSystem.Models
 {
+    [Table("Users")]
     public class User
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int UserID { get; set; }
-        [Required]
         public string? UserName { get; set; }
-        [Required]
         public string? Email { get; set; }
-        [Required]
         public string? Password { get; set; }
-        public int Phone { get; set; }
+        public string? Phone { get; set; }
+        public bool IsActive { get; set; } 
 
         [ForeignKey("Role")]
+        [JsonIgnore]
         public int RoleID { get; set; }
         [ForeignKey("Group")]
+        [JsonIgnore]
         public int GroupID { get; set; }
         [ForeignKey("Document")]
+        [JsonIgnore]
         public int DocumentID { get; set; }
 
-        [JsonIgnore]
+        /*[JsonIgnore]*/
         public Role? Role { get; set; }
-        [JsonIgnore]
+        /*[JsonIgnore]*/
         public Group? Group { get; set; }
+
         [JsonIgnore]
         public Setting? Setting { get; set; }
 
         [JsonIgnore]
         public ICollection<Document>? Documents { get; set; }
-    }
+    }  
 }

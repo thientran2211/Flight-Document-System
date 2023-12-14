@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FlightDocSystem.Models
 {
-    [Table("Flight")]
+    [Table("Flights")]
     public class Flight
     {
         [Key]

@@ -6,7 +6,5 @@
         public string? Logo { get; set; }
         public bool? Captcha { get; set; }
         public int UserID { get; set; }
-
-        public RegisterDTO? userDTO { get; set; }
     }
 }

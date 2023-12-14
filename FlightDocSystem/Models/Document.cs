@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FlightDocSystem.Models
 {
-    [Table("Document")]
+    [Table("Documents")]
     public class Document
     {
         [Key]
@@ -12,13 +12,13 @@ namespace FlightDocSystem.Models
         public string? Type { get; set; }
         public DateTime? CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
-        public decimal Version { get; set; }
+        public double Version { get; set; }
         public string? Note { get; set; }
 
 
         [ForeignKey("Flight")]
         public int FlightID { get; set; }
 
-        public Flight Flight { get; set; }
+        public Flight? Flight { get; set; }
     }
 }

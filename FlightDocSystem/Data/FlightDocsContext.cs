@@ -1,13 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FlightDocSystem.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
-namespace FlightDocSystem.Models
+namespace FlightDocSystem.Data
 {
     public class FlightDocsContext : DbContext
     {
-        
-        public FlightDocsContext(DbContextOptions<FlightDocsContext> options) : base(options) 
+
+        public FlightDocsContext(DbContextOptions<FlightDocsContext> options) : base(options)
         {
-            
+
         }
 
         public DbSet<User> Users { get; set; }
@@ -23,6 +25,6 @@ namespace FlightDocSystem.Models
         public DbSet<Setting> Settings { get; set; }
 
         public DbSet<Role> Roles { get; set; }
-        
+
     }
 }

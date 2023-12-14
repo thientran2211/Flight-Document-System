@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace FlightDocSystem.Models
 {
-    [Table("Group")]
+    [Table("Groups")]
     public class Group
     {
         [Key]

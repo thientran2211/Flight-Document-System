@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace FlightDocSystem.Models
 {
-    [Table("Permission")]
+    [Table("Permissions")]
     public class Permission
     {
         [Key]

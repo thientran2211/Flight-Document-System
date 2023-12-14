@@ -1,4 +1,5 @@
-﻿using FlightDocSystem.DTO;
+﻿using FlightDocSystem.Data;
+using FlightDocSystem.DTO;
 using FlightDocSystem.Models;
 using Microsoft.EntityFrameworkCore;
 
