@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FlightDocSystem.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase

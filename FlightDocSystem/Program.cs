@@ -80,9 +80,8 @@ namespace FlightDocSystem
             // Dependency Injection
             builder.Services.AddScoped<IGroupService, GroupService>();
             builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IAuthentication, AuthenticationService>();
         
-            builder.Services.AddAuthorization();
-
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
