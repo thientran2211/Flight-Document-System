@@ -1,6 +1,7 @@
 ﻿using FlightDocSystem.Data;
 using FlightDocSystem.DTO;
-using FlightDocSystem.Repositories;
+using FlightDocSystem.Helper;
+using FlightDocSystem.Interfaces;
 using FlightDocSystem.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -69,21 +70,23 @@ namespace FlightDocSystem
                         ValidateIssuerSigningKey = true,
                         ValidIssuer = builder.Configuration.GetSection("Jwt:Issuer").Value,
                         ValidAudience = builder.Configuration.GetSection("Jwt:Audience").Value,
-                        IssuerSigningKey = new SymmetricSecurityKey(key)
+                        /*IssuerSigningKey = new SymmetricSecurityKey(key)*/
+                        IssuerSigningKey = new SymmetricSecurityKey(Convert.FromBase64String(TokenHelper.Secret))
                     };
                 });
 
             // Register database
             builder.Services.AddDbContext<FlightDocsContext>(options =>
             {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("MyConnection"));
             });
 
             // Dependency Injection
-            builder.Services.AddScoped<IGroupService, GroupService>();
-            builder.Services.AddScoped<IUserService, UserService>();
-            builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
-        
+            builder.Services.AddTransient<IGroupService, GroupService>();
+            builder.Services.AddTransient<IRoleService, RoleService>();
+            builder.Services.AddTransient<ITokenService, TokenService>();
+            builder.Services.AddTransient<IUserService, UserService>();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

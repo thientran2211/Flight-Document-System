@@ -1,96 +1,126 @@
 ﻿using FlightDocSystem.Data;
 using FlightDocSystem.DTO;
-using FlightDocSystem.Repositories;
+using FlightDocSystem.Interfaces;
+using FlightDocSystem.Requests;
+using FlightDocSystem.Responses;
+using FlightDocSystem.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlightDocSystem.Controllers
 {
-    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class UserController : BaseApiController
     {
-        private readonly IUserService _user;
-        private readonly FlightDocsContext _context;
+        private readonly IUserService userService;
+        private readonly ITokenService tokenService;
 
-        public UserController(IUserService user, FlightDocsContext context) 
+        public UserController(IUserService userService, ITokenService tokenService) 
         {
-            _user = user;
-            _context = context;
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> GetAllUser()
-        {
-            try
-            {
-                var users = await _user.getAllUserAsync();
-                return Ok(users);
-            }
-            catch
-            {
-                return BadRequest();
-            }
-        }
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetUserById(int id)
-        {
-            var user = await _user.getUserAsync(id);
-
-            return user != null ? Ok(user) : NotFound();
+            this.userService = userService;
+            this.tokenService = tokenService;
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddNewUser(UserDTO userDTO)
+        [Route("Signup")]
+        public async Task<IActionResult> Signup(SignupRequest signupRequest)
         {
-            try
+            if (!ModelState.IsValid)
             {
-                if (ModelState.IsValid)
-                {
-                    var newUser = await _user.AddUserAsync(userDTO);
-                    var user = await _user.getUserAsync(newUser);
+                var errors = ModelState.Values.SelectMany(x => x.Errors.Select(c => c.ErrorMessage)).ToList();
 
-                    return user != null ? Ok(user) : NotFound();
+                if (errors.Any())
+                {
+                    return BadRequest(new TokenResponse
+                    {
+                        Error = $"{string.Join(",", errors)}",
+                        ErrorCode = "S01"
+                    });
                 }
-                else
+            }
+
+            var signupResponse = await userService.SignupAsync(signupRequest);
+
+            if (!signupResponse.Success)
+            {
+                return UnprocessableEntity(signupResponse);
+            }
+
+            return Ok(signupResponse.Email);
+        }
+
+        [HttpPost]
+        [Route("Login")]
+        public async Task<IActionResult> Login(LoginRequest loginRequest)
+        {
+            if (loginRequest == null || string.IsNullOrEmpty(loginRequest.Email) || string.IsNullOrEmpty(loginRequest.Password))
+            {
+                return BadRequest(new TokenResponse
                 {
-                    return BadRequest("Email for user is invalid");
-                }                              
+                    Error = "Missing login details",
+                    ErrorCode = "L01"
+                });
             }
-            catch
-            {
-                return BadRequest();
-            } 
 
+            var loginResponse = await userService.LoginAsync(loginRequest);
+
+            if (!loginResponse.Success)
+            {
+                return Unauthorized(new
+                {
+                    loginResponse.ErrorCode,
+                    loginResponse.Error
+                });
+            }
+
+            return Ok(loginResponse);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser(int id, UserDTO userDTO)
+        [HttpPost]
+        [Route("Refresh-token")]
+        public async Task<IActionResult> RefreshToken(RefreshTokenRequest refreshTokenRequest)
         {
-            var existingUser = await _context.Users!.FindAsync(id);
-
-            if (existingUser != null)
+            if (refreshTokenRequest == null || string.IsNullOrEmpty
+            (refreshTokenRequest.RefreshToken) || refreshTokenRequest.UserID == 0)
             {
-                await _user.UpdateUserAsync(id, userDTO);
-                return Ok(existingUser);
+                return BadRequest(new TokenResponse
+                {
+                    Error = "Missing refresh token details",
+                    ErrorCode = "R01"
+                });
             }
 
-            return NotFound();
-        }
+            var validateRefreshTokenResponse = await tokenService.ValidateRefreshTokenAsync(refreshTokenRequest);
 
-        [HttpDelete]
-        public async Task<IActionResult> DeleteUser(int id)
+            if (!validateRefreshTokenResponse.Success)
+            {
+                return UnprocessableEntity(validateRefreshTokenResponse);
+            }
+
+            var tokenResponse = await tokenService.GenerateTokensAsync(validateRefreshTokenResponse.UserId);
+
+            return Ok(new
+            {
+                AccessToken = tokenResponse.Item1,
+                RefreshToken = tokenResponse.Item2,
+            });
+        }
+    
+        [Authorize]
+        [HttpPost]
+        [Route("Logout")]
+        public async Task<IActionResult> Logout()
         {
-            var existingUser = _context.Users!.SingleOrDefault(u => u.UserID== id);
-            if (existingUser != null)
+            var logout = await userService.LogoutAsync(UserID);
+
+            if (!logout.Success)
             {
-                await _user.DeleteUserAsync(id);
-                return Ok("Delete Succeeded");
+                return UnprocessableEntity(logout);
             }
 
-            return BadRequest();
+            return Ok("Logout succeeded!");
         }
+        
     }
 }

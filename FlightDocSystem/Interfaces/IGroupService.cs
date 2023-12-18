@@ -1,7 +1,7 @@
 ﻿using FlightDocSystem.DTO;
 using FlightDocSystem.Models;
 
-namespace FlightDocSystem.Services
+namespace FlightDocSystem.Interfaces
 {
     public interface IGroupService
     {

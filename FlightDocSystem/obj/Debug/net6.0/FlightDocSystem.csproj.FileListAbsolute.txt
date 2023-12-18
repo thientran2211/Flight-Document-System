@@ -266,13 +266,14 @@ D:\Intern AltaSoftware\FlightDoc_Project\FlightDocSystem\obj\Debug\net6.0\Flight
 D:\Intern AltaSoftware\FlightDoc_Project\FlightDocSystem\obj\Debug\net6.0\FlightDocSystem.csproj.CoreCompileInputs.cache
 D:\Intern AltaSoftware\FlightDoc_Project\FlightDocSystem\obj\Debug\net6.0\FlightDocSystem.MvcApplicationPartsAssemblyInfo.cs
 D:\Intern AltaSoftware\FlightDoc_Project\FlightDocSystem\obj\Debug\net6.0\FlightDocSystem.MvcApplicationPartsAssemblyInfo.cache
+D:\Intern AltaSoftware\FlightDoc_Project\FlightDocSystem\obj\Debug\net6.0\FlightDocSystem.sourcelink.json
+D:\Intern AltaSoftware\FlightDoc_Project\FlightDocSystem\obj\Debug\net6.0\staticwebassets.build.json
+D:\Intern AltaSoftware\FlightDoc_Project\FlightDocSystem\obj\Debug\net6.0\staticwebassets.development.json
 D:\Intern AltaSoftware\FlightDoc_Project\FlightDocSystem\obj\Debug\net6.0\staticwebassets\msbuild.FlightDocSystem.Microsoft.AspNetCore.StaticWebAssets.props
 D:\Intern AltaSoftware\FlightDoc_Project\FlightDocSystem\obj\Debug\net6.0\staticwebassets\msbuild.build.FlightDocSystem.props
 D:\Intern AltaSoftware\FlightDoc_Project\FlightDocSystem\obj\Debug\net6.0\staticwebassets\msbuild.buildMultiTargeting.FlightDocSystem.props
 D:\Intern AltaSoftware\FlightDoc_Project\FlightDocSystem\obj\Debug\net6.0\staticwebassets\msbuild.buildTransitive.FlightDocSystem.props
 D:\Intern AltaSoftware\FlightDoc_Project\FlightDocSystem\obj\Debug\net6.0\staticwebassets.pack.json
-D:\Intern AltaSoftware\FlightDoc_Project\FlightDocSystem\obj\Debug\net6.0\staticwebassets.build.json
-D:\Intern AltaSoftware\FlightDoc_Project\FlightDocSystem\obj\Debug\net6.0\staticwebassets.development.json
 D:\Intern AltaSoftware\FlightDoc_Project\FlightDocSystem\obj\Debug\net6.0\scopedcss\bundle\FlightDocSystem.styles.css
 D:\Intern AltaSoftware\FlightDoc_Project\FlightDocSystem\obj\Debug\net6.0\FlightDocSystem.csproj.CopyComplete
 D:\Intern AltaSoftware\FlightDoc_Project\FlightDocSystem\obj\Debug\net6.0\FlightDocSystem.dll
@@ -280,4 +281,3 @@ D:\Intern AltaSoftware\FlightDoc_Project\FlightDocSystem\obj\Debug\net6.0\refint
 D:\Intern AltaSoftware\FlightDoc_Project\FlightDocSystem\obj\Debug\net6.0\FlightDocSystem.pdb
 D:\Intern AltaSoftware\FlightDoc_Project\FlightDocSystem\obj\Debug\net6.0\FlightDocSystem.genruntimeconfig.cache
 D:\Intern AltaSoftware\FlightDoc_Project\FlightDocSystem\obj\Debug\net6.0\ref\FlightDocSystem.dll
-D:\Intern AltaSoftware\FlightDoc_Project\FlightDocSystem\obj\Debug\net6.0\FlightDocSystem.sourcelink.json

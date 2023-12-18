@@ -14,7 +14,6 @@ namespace FlightDocSystem.Models
         public DateTime? CreateDate { get; set; }
         public int NumberOfUser { get; set; }
 
-
         public int PermissionID { get; set; }
         [JsonIgnore]
         public Permission? Permission { get; set; }

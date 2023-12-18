@@ -26,5 +26,7 @@ namespace FlightDocSystem.Data
 
         public DbSet<Role> Roles { get; set; }
 
+        public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
+
     }
 }
