@@ -1,16 +1,14 @@
-﻿using FlightDocSystem.Authentication;
-using FlightDocSystem.Data;
-using FlightDocSystem.DTO;
+﻿using FlightDocSystem.Data;
 using FlightDocSystem.Models;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace FlightDocSystem.Services
 {
-    public class AuthenticationService : IAuthentication
+    public class AuthenticationService : IAuthenticationService
     {
         private readonly IConfiguration _configuration;
         private readonly FlightDocsContext _context;
@@ -20,32 +18,62 @@ namespace FlightDocSystem.Services
             _configuration = configuration;
             _context = context;
         }
-
-        public string GenerateJwtToken(string email)
+        public Token GenerateToken(User user)
         {
-            var claims = new List<Claim>
+            var currentUser = GetUser(user.Email, user.Password);
+
+            try
             {
-                new Claim(ClaimTypes.Email, email)
-            };
+                var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+                var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+                var tokenHandler = new JwtSecurityTokenHandler();
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:SecretKey"]));
-            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+                bool isAdmin = currentUser.RoleID == 1;
 
-            var token = new JwtSecurityToken(
-                _configuration["JWT:Issuer"],
-                _configuration["JWT:Audience"],
-                claims,
-                expires: DateTime.UtcNow.AddHours(1),
-                signingCredentials: credentials
-            );
+                if (isAdmin)
+                {
+                    var adminClaim = new Claim(ClaimTypes.Role, "Admin");                    
+                }
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+                var claims = new[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, user.UserName),
+                    new Claim(ClaimTypes.Email, user.Email)
+                };
+
+                var accessToken = tokenHandler.CreateJwtSecurityToken(
+                    _configuration["Jwt:Issuer"],
+                    _configuration["Jwt:Audience"],
+                    subject: new ClaimsIdentity(claims),
+                    expires: DateTime.Now.AddMinutes(20),
+                    signingCredentials: credentials);
+
+                return new Token
+                {
+                    AccessToken = tokenHandler.WriteToken(accessToken)
+                };
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
 
-        public bool ValidateUserCredentials(string email, string password)
+        public User AuthenticateUser(UserLogin userLogin)
         {
-            var user = _context.Users.SingleOrDefault(u => u.Email == email && u.Password == password);
-            return user != null;
+            var currentUser = _context.Users.FirstOrDefault(u => u.Email.ToLower() == userLogin.Email.ToLower() && u.Password == userLogin.Password);
+
+            if (currentUser == null)
+            {
+                return null;
+            }
+
+            return currentUser;
+        }
+        
+        public User GetUser (string email, string password)
+        {
+            return _context.Users.FirstOrDefault(u => u.Email == email && u.Password == password);
         }
     }
 }

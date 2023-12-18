@@ -27,16 +27,16 @@ namespace FlightDocSystem
             // Thêm cấu hình Swagger
             builder.Services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "FlightDocsSystem", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "FlightDocsSystemAPI", Version = "v1" });
 
-                // Cấu hình xác thực JWT trong Swagger
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
-                    Description = "Jwt Authorization",
                     Name = "Authorization",
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
                     In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.ApiKey,
-                    Scheme = "Bearer"
+                    Type = SecuritySchemeType.Http,
+                    Description = "Bearer Authentication with JWT"
                 });
 
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -59,15 +59,17 @@ namespace FlightDocSystem
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
+                    var key = Encoding.UTF8.GetBytes(builder.Configuration.GetSection("Jwt:Key").Value);
+
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,
                         ValidateAudience = true,
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
-                        ValidIssuer = "JWT:Issuer",
-                        ValidAudience = "JWT:Audience",
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("JWT:SecretKey"))
+                        ValidIssuer = builder.Configuration.GetSection("Jwt:Issuer").Value,
+                        ValidAudience = builder.Configuration.GetSection("Jwt:Audience").Value,
+                        IssuerSigningKey = new SymmetricSecurityKey(key)
                     };
                 });
 
@@ -80,7 +82,7 @@ namespace FlightDocSystem
             // Dependency Injection
             builder.Services.AddScoped<IGroupService, GroupService>();
             builder.Services.AddScoped<IUserService, UserService>();
-            builder.Services.AddScoped<IAuthentication, AuthenticationService>();
+            builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
         
             var app = builder.Build();
 
@@ -88,10 +90,7 @@ namespace FlightDocSystem
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI(c =>
-                {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "FlightDocsSystem V1");
-                });
+                app.UseSwaggerUI();
             }
 
             app.UseHttpsRedirection();
