@@ -1,4 +1,9 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using FlightDocSystem.Data;
+using FlightDocSystem.DTO;
+using FlightDocSystem.Models;
+using FlightDocSystem.Requests;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -10,9 +15,15 @@ namespace FlightDocSystem.Helper
         public const string Issuer = "https://localhost:7080";
         public const string Audience = "https://localhost:7080";
         public const string Secret = "p0GXO6VuVZLRPef0tyO9jCqK4uZufDa6LP4n8Gj+8hQPB30f94pFiECAnPeMi5N6VT3/uscoGH7+zJrv4AuuPg==";
+        private readonly FlightDocsContext _context;
 
+        public TokenHelper (FlightDocsContext context)
+        {
+            _context = context;
+        }
         public static async Task<string> GenerateAccessToken(int userId)
         {
+
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Convert.FromBase64String(Secret);
 

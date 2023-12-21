@@ -1,16 +1,18 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace FlightDocSystem.Models
 {
-    [Table("Flights")]
     public class Flight
     {
-        [Key]
         public int FlightID { get; set; }
-        public string? FlightName { get; set; }
+        public string? FlightNo { get; set; }
+        public DateTime CreateDate { get; set; }
         public DateTime? DepartureTime { get; set; }
-        public DateTime? ArrivalTime { get; set; }
+        public string? PointOfLoading { get; set; }
+        public string? PointOfUnloading {  get; set; }
         public string? Route { get; set; }
+
     }
 }

@@ -1,12 +1,7 @@
 ﻿using FlightDocSystem.Data;
 using FlightDocSystem.DTO;
 using FlightDocSystem.Models;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.CodeAnalysis.Scripting;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 using Microsoft.EntityFrameworkCore;
 using FlightDocSystem.Interfaces;
 using FlightDocSystem.Responses;
@@ -24,6 +19,22 @@ namespace FlightDocSystem.Services
         {
             _context = context;
             _tokenService = tokenService;
+        }
+      
+        public async Task<List<User>> getAllUserAsync()
+        {
+            var users = await _context.Users.ToListAsync();
+            return users;
+        }
+
+        public async Task<User> getUserAsync(int id)
+        {
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
+            {
+                throw new NotImplementedException();
+            }
+            return user;
         }
 
         public async Task<TokenResponse> LoginAsync(LoginRequest loginRequest)
@@ -120,6 +131,8 @@ namespace FlightDocSystem.Services
                 Password = passwordHash,
                 PasswordSalt = Convert.ToBase64String(salt),
                 UserName = signupRequest.UserName,
+                GroupId = signupRequest.GroupId,
+                RoleId = signupRequest.RoleId,
                 IsActive = true
             };
 
@@ -139,6 +152,31 @@ namespace FlightDocSystem.Services
                 ErrorCode = "S05"
             };
         }
-        
+
+        public async Task UpdateUserAsync(int id, UserDTO model)
+        {
+            var existingUser = await _context.Users.FindAsync(id);
+            if (existingUser != null)
+            {
+                existingUser.UserName = model.UserName;
+                existingUser.Phone = model.Phone;
+                existingUser.Email = model.Email;
+                existingUser.Password = model.Password;
+                existingUser.IsActive = model.IsActive;
+                
+                _context.Users.Update(existingUser);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task DeleteUserAsync(int id)
+        {
+            var existingUser = _context.Users!.SingleOrDefault(b => b.UserID == id);
+            if (existingUser != null)
+            {
+                _context.Users.Remove(existingUser);
+                await _context.SaveChangesAsync();
+            }
+        }       
     }
 }

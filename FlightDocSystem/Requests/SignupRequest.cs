@@ -13,6 +13,8 @@ namespace FlightDocSystem.Requests
         public string Password { get; set; } = null!;
         [Required]
         public string ConfirmPassword { get; set; } = null!;
+        public int GroupId { get; set; } 
+        public int RoleId { get; set; }
     }
 
     public class VietjetAirEmailAttribute : ValidationAttribute

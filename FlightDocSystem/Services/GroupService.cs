@@ -20,8 +20,6 @@ namespace FlightDocSystem.Services
             var group = new Group
             {
                 GroupName = groupDTO.GroupName,
-                PermissionID = groupDTO.PermissionID,
-                NumberOfUser = groupDTO.NumberOfUser,
                 CreateDate = DateTime.Now
             };
 
@@ -53,8 +51,6 @@ namespace FlightDocSystem.Services
             if (existingGroup != null)
             {
                 existingGroup.GroupName = groupDTO.GroupName;
-                existingGroup.PermissionID = groupDTO.PermissionID;
-                existingGroup.NumberOfUser = groupDTO.NumberOfUser;
                 existingGroup.CreateDate = DateTime.Now;
                 context.Groups.Update(existingGroup);
 

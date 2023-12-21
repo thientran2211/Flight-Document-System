@@ -6,6 +6,7 @@ using FlightDocSystem.Responses;
 using FlightDocSystem.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace FlightDocSystem.Controllers
 {
@@ -13,13 +14,15 @@ namespace FlightDocSystem.Controllers
     [ApiController]
     public class UserController : BaseApiController
     {
-        private readonly IUserService userService;
-        private readonly ITokenService tokenService;
+        private readonly IUserService _userService;
+        private readonly ITokenService _tokenService;
+        private readonly FlightDocsContext _context;
 
-        public UserController(IUserService userService, ITokenService tokenService) 
+        public UserController(IUserService userService, ITokenService tokenService, FlightDocsContext context) 
         {
-            this.userService = userService;
-            this.tokenService = tokenService;
+            _userService = userService;
+            _tokenService = tokenService;
+            _context = context;
         }
 
         [HttpPost]
@@ -40,7 +43,7 @@ namespace FlightDocSystem.Controllers
                 }
             }
 
-            var signupResponse = await userService.SignupAsync(signupRequest);
+            var signupResponse = await _userService.SignupAsync(signupRequest);
 
             if (!signupResponse.Success)
             {
@@ -48,6 +51,29 @@ namespace FlightDocSystem.Controllers
             }
 
             return Ok(signupResponse.Email);
+        }
+
+        [Authorize]
+        [HttpGet("GetAllUsers")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            try
+            {
+                var user = await _userService.getAllUserAsync();
+                return Ok(user);
+            }   
+            catch
+            {
+                return BadRequest();
+            }
+        }
+
+        [Authorize]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetUserById(int id)
+        {
+            var user = await _userService.getUserAsync(id);
+            return user != null ? Ok(user) : NotFound("User not found.");
         }
 
         [HttpPost]
@@ -63,7 +89,7 @@ namespace FlightDocSystem.Controllers
                 });
             }
 
-            var loginResponse = await userService.LoginAsync(loginRequest);
+            var loginResponse = await _userService.LoginAsync(loginRequest);
 
             if (!loginResponse.Success)
             {
@@ -75,6 +101,33 @@ namespace FlightDocSystem.Controllers
             }
 
             return Ok(loginResponse);
+        }
+
+        [Authorize]
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateUser(int id, UserDTO model)
+        {
+            var existingUser = await _context.Users.FindAsync(id);
+            if (existingUser == null)
+            {
+                return NotFound();
+            }
+            await _userService.UpdateUserAsync(id, model);
+            return Ok(existingUser);
+
+        }
+
+        [Authorize]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            var existingUser = _context.Users!.SingleOrDefault(b => b.UserID == id);
+            if (existingUser == null)
+            {
+                return NotFound();
+            }
+            await _userService.DeleteUserAsync(id);
+            return Ok();
         }
 
         [HttpPost]
@@ -91,14 +144,14 @@ namespace FlightDocSystem.Controllers
                 });
             }
 
-            var validateRefreshTokenResponse = await tokenService.ValidateRefreshTokenAsync(refreshTokenRequest);
+            var validateRefreshTokenResponse = await _tokenService.ValidateRefreshTokenAsync(refreshTokenRequest);
 
             if (!validateRefreshTokenResponse.Success)
             {
                 return UnprocessableEntity(validateRefreshTokenResponse);
             }
 
-            var tokenResponse = await tokenService.GenerateTokensAsync(validateRefreshTokenResponse.UserId);
+            var tokenResponse = await _tokenService.GenerateTokensAsync(validateRefreshTokenResponse.UserId);
 
             return Ok(new
             {
@@ -112,7 +165,7 @@ namespace FlightDocSystem.Controllers
         [Route("Logout")]
         public async Task<IActionResult> Logout()
         {
-            var logout = await userService.LogoutAsync(UserID);
+            var logout = await _userService.LogoutAsync(UserID);
 
             if (!logout.Success)
             {

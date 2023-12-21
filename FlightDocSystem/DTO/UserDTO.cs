@@ -4,7 +4,6 @@ namespace FlightDocSystem.DTO
 {
     public class UserDTO
     {
-        public int UserID { get; set; }
         public string? UserName { get; set; }
 
         [RegularExpression(@"^[0-9]{10,11}$", ErrorMessage = "Invalid phone number.")]
