@@ -1,6 +1,6 @@
-﻿namespace FlightDocSystem.Responses
+﻿namespace FlightDocSystem.Models
 {
-    public class TokenResponse : BaseResponse
+    public class AuthResponse
     {
         public string Token { get; set; } = string.Empty;
         public string Role { get; set; } = string.Empty;

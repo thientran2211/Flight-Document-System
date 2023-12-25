@@ -1,6 +1,7 @@
 ﻿using FlightDocSystem.Data;
 using FlightDocSystem.DTO;
 using FlightDocSystem.Interfaces;
+using FlightDocSystem.Models;
 using FlightDocSystem.Requests;
 using FlightDocSystem.Responses;
 using FlightDocSystem.Services;
@@ -15,19 +16,20 @@ namespace FlightDocSystem.Controllers
     public class UserController : BaseApiController
     {
         private readonly IUserService _userService;
-        private readonly ITokenService _tokenService;
         private readonly FlightDocsContext _context;
+        private readonly ITokenManager _tokenManager;
 
-        public UserController(IUserService userService, ITokenService tokenService, FlightDocsContext context) 
+        public UserController(IUserService userService, FlightDocsContext context, ITokenManager tokenManager) 
         {
             _userService = userService;
-            _tokenService = tokenService;
             _context = context;
+            _tokenManager = tokenManager;
         }
 
-        [HttpPost]
-        [Route("Signup")]
-        public async Task<IActionResult> Signup(SignupRequest signupRequest)
+        [HttpPost("Register-User")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult> Register(SignupRequest signupRequest)
         {
             if (!ModelState.IsValid)
             {
@@ -43,18 +45,38 @@ namespace FlightDocSystem.Controllers
                 }
             }
 
-            var signupResponse = await _userService.SignupAsync(signupRequest);
+            var result = await _userService.RegisterUser(signupRequest);
 
-            if (!signupResponse.Success)
-            {
-                return UnprocessableEntity(signupResponse);
-            }
-
-            return Ok(signupResponse.Email);
+            return Ok();
         }
 
-        [Authorize]
+        [HttpPost("Check-Credentials")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult<AuthResponse> GetDetails(LoginRequest user)
+        {
+            var authUser = _userService.CheckCredentials(user);
+            if (authUser == null)
+            {
+                return NotFound();
+            }
+            if (authUser != null && !BCrypt.Net.BCrypt.Verify(user.Password, authUser.Password))
+            {
+                return BadRequest("Incorrect Password! Please check your password!");
+            }
+            var roleName = _userService.GetUserRole(authUser.RoleId);
+            var authResponse = new AuthResponse()
+            {
+                IsAuthenticated = true,
+                Role = roleName,
+                Token = _tokenManager.GenerateToken(authUser, roleName)
+            };
+            return Ok(authResponse);
+        }
+
         [HttpGet("GetAllUsers")]
+        [Authorize(Roles = "System Admin")]
         public async Task<IActionResult> GetAllUsers()
         {
             try
@@ -64,12 +86,13 @@ namespace FlightDocSystem.Controllers
             }   
             catch
             {
-                return BadRequest();
+                return Unauthorized("Access denied!");
             }
         }
 
         [Authorize]
         [HttpGet("{id}")]
+        [Authorize(Roles = "System Admin")]
         public async Task<IActionResult> GetUserById(int id)
         {
             var user = await _userService.getUserAsync(id);
@@ -91,76 +114,47 @@ namespace FlightDocSystem.Controllers
 
             var loginResponse = await _userService.LoginAsync(loginRequest);
 
-            if (!loginResponse.Success)
-            {
-                return Unauthorized(new
-                {
-                    loginResponse.ErrorCode,
-                    loginResponse.Error
-                });
-            }
-
             return Ok(loginResponse);
         }
 
-        [Authorize]
         [HttpPut("{id}")]
+        [Authorize(Roles = "System Admin")]
         public async Task<IActionResult> UpdateUser(int id, UserDTO model)
         {
-            var existingUser = await _context.Users.FindAsync(id);
-            if (existingUser == null)
+            try
             {
-                return NotFound();
+                var existingUser = await _context.Users.FindAsync(id);
+                if (existingUser == null)
+                {
+                    return NotFound();
+                }
+                await _userService.UpdateUserAsync(id, model);
+                return Ok(existingUser);
             }
-            await _userService.UpdateUserAsync(id, model);
-            return Ok(existingUser);
-
+            catch
+            {
+                return Unauthorized("Access denied!");
+            }
         }
 
-        [Authorize]
         [HttpDelete("{id}")]
+        [Authorize(Roles = "System Admin")]
         public async Task<IActionResult> DeleteUser(int id)
         {
-            var existingUser = _context.Users!.SingleOrDefault(b => b.UserID == id);
-            if (existingUser == null)
+            try
             {
-                return NotFound();
-            }
-            await _userService.DeleteUserAsync(id);
-            return Ok();
-        }
-
-        [HttpPost]
-        [Route("Refresh-token")]
-        public async Task<IActionResult> RefreshToken(RefreshTokenRequest refreshTokenRequest)
-        {
-            if (refreshTokenRequest == null || string.IsNullOrEmpty
-            (refreshTokenRequest.RefreshToken) || refreshTokenRequest.UserID == 0)
-            {
-                return BadRequest(new TokenResponse
+                var existingUser = _context.Users!.SingleOrDefault(b => b.UserID == id);
+                if (existingUser == null)
                 {
-                    Error = "Missing refresh token details",
-                    ErrorCode = "R01"
-                });
+                    return NotFound();
+                }
+                await _userService.DeleteUserAsync(id);
+                return Ok();
             }
-
-            var validateRefreshTokenResponse = await _tokenService.ValidateRefreshTokenAsync(refreshTokenRequest);
-
-            if (!validateRefreshTokenResponse.Success)
-            {
-                return UnprocessableEntity(validateRefreshTokenResponse);
-            }
-
-            var tokenResponse = await _tokenService.GenerateTokensAsync(validateRefreshTokenResponse.UserId);
-
-            return Ok(new
-            {
-                AccessToken = tokenResponse.Item1,
-                RefreshToken = tokenResponse.Item2,
-            });
+            catch { return Unauthorized("Access denied!"); }
+            
         }
-    
-        [Authorize]
+
         [HttpPost]
         [Route("Logout")]
         public async Task<IActionResult> Logout()
@@ -174,6 +168,6 @@ namespace FlightDocSystem.Controllers
 
             return Ok("Logout succeeded!");
         }
-        
+
     }
 }

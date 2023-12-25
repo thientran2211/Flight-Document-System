@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "oohI71ss9e7JAQYvvx0P79UiMcz6SK+Zy8NtuHW04zfWH/Xs/K6wHpFBgiHCXVkYXT4GMAuZKIBAFdCOjend2w==",
+  "dgSpecHash": "9CZKroU1846JYFHmj2IknOdkn42KpuDsNQWzoJdjJrOylJat+xHaOTyWGmGWCRqKWbir5DtjaoETJ7Eu2Lo1OQ==",
   "success": true,
   "projectFilePath": "D:\\Intern AltaSoftware\\FlightDoc_Project\\FlightDocSystem\\FlightDocSystem.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\User\\.nuget\\packages\\bcrypt.net-next\\4.0.0\\bcrypt.net-next.4.0.0.nupkg.sha512",
     "C:\\Users\\User\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
     "C:\\Users\\User\\.nuget\\packages\\messagepack\\2.1.152\\messagepack.2.1.152.nupkg.sha512",
     "C:\\Users\\User\\.nuget\\packages\\messagepack.annotations\\2.1.152\\messagepack.annotations.2.1.152.nupkg.sha512",

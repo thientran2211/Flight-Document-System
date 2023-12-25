@@ -1,6 +1,5 @@
 ﻿using FlightDocSystem.Data;
 using FlightDocSystem.DTO;
-using FlightDocSystem.Helper;
 using FlightDocSystem.Interfaces;
 using FlightDocSystem.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -60,18 +59,12 @@ namespace FlightDocSystem
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
-                    var key = Encoding.UTF8.GetBytes(builder.Configuration.GetSection("Jwt:Key").Value);
-
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
-                        ValidIssuer = builder.Configuration.GetSection("Jwt:Issuer").Value,
-                        ValidAudience = builder.Configuration.GetSection("Jwt:Audience").Value,
-                        /*IssuerSigningKey = new SymmetricSecurityKey(key)*/
-                        IssuerSigningKey = new SymmetricSecurityKey(Convert.FromBase64String(TokenHelper.Secret))
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"])),
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
                     };
                 });
 
@@ -84,8 +77,8 @@ namespace FlightDocSystem
             // Dependency Injection
             builder.Services.AddTransient<IGroupService, GroupService>();
             builder.Services.AddTransient<IRoleService, RoleService>();
-            builder.Services.AddTransient<ITokenService, TokenService>();
             builder.Services.AddTransient<IUserService, UserService>();
+            builder.Services.AddTransient<ITokenManager, TokenManager>();
 
             var app = builder.Build();
 

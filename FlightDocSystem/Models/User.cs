@@ -19,7 +19,6 @@ namespace FlightDocSystem.Models
         public string UserName { get; set; } = null!;
         public string Email { get; set; } = null!;
         public string Password { get; set; } = null!;
-        public string PasswordSalt { get; set; }
         public string? Phone { get; set; }
         public bool IsActive { get; set; }
         public int RoleId { get; set; }
@@ -32,7 +31,7 @@ namespace FlightDocSystem.Models
         public Role? Role { get; set; }
         [JsonIgnore]
         public Setting? Setting { get; set; }
-
+        [JsonIgnore]
         public virtual ICollection<RefreshToken> RefreshTokens { get; set; }
     }  
 }
