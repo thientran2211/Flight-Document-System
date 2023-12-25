@@ -1,6 +1,3 @@
 ﻿################################################################################
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
-
-/FlightDocSystem/.vs/FlightDocSystem/FileContentIndex/09575919-18f5-4d36-b054-d9c4d454444e.vsidx
-*.vsidx
