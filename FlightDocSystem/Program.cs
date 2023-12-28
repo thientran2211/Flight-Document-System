@@ -76,6 +76,7 @@ namespace FlightDocSystem
 
             // Dependency Injection
             builder.Services.AddTransient<IGroupService, GroupService>();
+            builder.Services.AddTransient<IPermissionService, PermissionService>();
             builder.Services.AddTransient<IRoleService, RoleService>();
             builder.Services.AddTransient<IUserService, UserService>();
             builder.Services.AddTransient<ITokenManager, TokenManager>();
@@ -83,6 +84,7 @@ namespace FlightDocSystem
             builder.Services.AddTransient<IDocumentService, DocumentService>();
             builder.Services.AddTransient<IDocTypeService, DocTypeService>();
             builder.Services.AddTransient<IDocumentHistoryService, DocumentHistoryService>();
+            builder.Services.AddTransient<ISettingService, SettingService>();
 
             var app = builder.Build();
 

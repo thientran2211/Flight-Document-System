@@ -1,6 +1,7 @@
 ﻿using FlightDocSystem.Data;
 using FlightDocSystem.DTO;
 using FlightDocSystem.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,6 +9,7 @@ namespace FlightDocSystem.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class FlightController : ControllerBase
     {
         private readonly IFlightService _flightService;

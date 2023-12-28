@@ -2,6 +2,7 @@
 using FlightDocSystem.DTO;
 using FlightDocSystem.Interfaces;
 using FlightDocSystem.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,6 +21,7 @@ namespace FlightDocSystem.Controllers
             _context = context;
         }
 
+        [Authorize(Roles = "System Admin, Go Office")]
         [HttpGet("GetAllDocument")]
         public async Task<IActionResult> GetAllDocument()
         {
@@ -48,6 +50,7 @@ namespace FlightDocSystem.Controllers
             }
         }
 
+        [Authorize(Roles = "System Admin, Go Office")]
         [HttpPost("AddNewDocument")]
         public async Task<IActionResult> AddNewDocument(DocumentDTO documentDTO)
         {
@@ -108,6 +111,7 @@ namespace FlightDocSystem.Controllers
             }
         }
 
+        [Authorize(Roles = "System Admin, Go Office")]
         [HttpDelete("Delete-DocumentFile")]
         public async Task<IActionResult> DeleteDocument(int documentId)
         {

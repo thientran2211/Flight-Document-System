@@ -126,17 +126,7 @@ namespace FlightDocSystem.Services
                 await _context.SaveChangesAsync();
             }
         }
-
-        private async Task<string> SaveFileToString(IFormFile file)
-        {
-            using (var memoryStream = new MemoryStream())
-            {
-                await file.CopyToAsync(memoryStream);
-                byte[] fileData = memoryStream.ToArray();
-                return Convert.ToBase64String(fileData);
-            }
-        }
-
+      
         private async Task SaveDocumentHistory(Document document)
         {
             try

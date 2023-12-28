@@ -9,6 +9,7 @@ namespace FlightDocSystem.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class GroupController : Controller
     {
         private readonly IGroupService _groupService;

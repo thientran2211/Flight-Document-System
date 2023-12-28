@@ -16,12 +16,13 @@ namespace FlightDocSystem.Models
         public string Password { get; set; } = null!;
         public string? Phone { get; set; }
         public bool IsActive { get; set; }
+
         public int RoleId { get; set; }
         public int GroupId { get; set; }
 
 
         [JsonIgnore]
-        public List<Group> Groups { get; } = new();
+        public Group? Group { get; set; }
         [JsonIgnore]
         public Role? Role { get; set; }
         [JsonIgnore]
