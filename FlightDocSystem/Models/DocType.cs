@@ -4,7 +4,7 @@ namespace FlightDocSystem.Models
 {
     public class DocType
     {
-        public int Id { get; set; }
+        public int DocTypeId { get; set; }
         public string? DocTypeName { get; set; }
 
         [JsonIgnore]

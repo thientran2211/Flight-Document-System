@@ -117,30 +117,6 @@ namespace FlightDocSystem.Services
             };
         }
 
-        public async Task<LogoutResponse> LogoutAsync(int userId)
-        {
-            var refreshToken = await _context.RefreshTokens.FirstOrDefaultAsync(o => o.UserId == userId);
-
-            if (refreshToken == null)
-            {
-                return new LogoutResponse { Success = true };
-            }
-
-            var saveResponse = await _context.SaveChangesAsync();
-
-            if (saveResponse >= 0)
-            {
-                return new LogoutResponse { Success = true };
-            }
-
-            return new LogoutResponse
-            {
-                Success = false,
-                Error = "Unable to logout user",
-                ErrorCode = "L04"
-            };
-        }
-
         public async Task UpdateUserAsync(int id, UserDTO model)
         {
             var existingUser = await _context.Users.FindAsync(id);

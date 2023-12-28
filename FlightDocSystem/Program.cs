@@ -79,6 +79,10 @@ namespace FlightDocSystem
             builder.Services.AddTransient<IRoleService, RoleService>();
             builder.Services.AddTransient<IUserService, UserService>();
             builder.Services.AddTransient<ITokenManager, TokenManager>();
+            builder.Services.AddTransient<IFlightService, FlightService>();
+            builder.Services.AddTransient<IDocumentService, DocumentService>();
+            builder.Services.AddTransient<IDocTypeService, DocTypeService>();
+            builder.Services.AddTransient<IDocumentHistoryService, DocumentHistoryService>();
 
             var app = builder.Build();
 

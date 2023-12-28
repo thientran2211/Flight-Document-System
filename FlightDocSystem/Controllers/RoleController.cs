@@ -9,7 +9,7 @@ namespace FlightDocSystem.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = "System Admin")]
     public class RoleController : ControllerBase
     {
         private readonly IRoleService _roleService;

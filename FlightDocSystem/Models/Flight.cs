@@ -14,5 +14,7 @@ namespace FlightDocSystem.Models
         public string? PointOfUnloading {  get; set; }
         public string? Route { get; set; }
 
+        [JsonIgnore]
+        public ICollection<Document>? Documents { get; set; }
     }
 }

@@ -28,7 +28,7 @@ namespace FlightDocSystem.Data
 
         public DbSet<DocType> DocTypes { get; set; }
 
-        public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
+        public DbSet<DocumentHistory> DocumentHistorys { get; set; }
         
     }
 }

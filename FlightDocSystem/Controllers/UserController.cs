@@ -154,20 +154,5 @@ namespace FlightDocSystem.Controllers
             catch { return Unauthorized("Access denied!"); }
             
         }
-
-        [HttpPost]
-        [Route("Logout")]
-        public async Task<IActionResult> Logout()
-        {
-            var logout = await _userService.LogoutAsync(UserID);
-
-            if (!logout.Success)
-            {
-                return UnprocessableEntity(logout);
-            }
-
-            return Ok("Logout succeeded!");
-        }
-
     }
 }

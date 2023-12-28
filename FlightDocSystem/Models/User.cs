@@ -8,11 +8,6 @@ namespace FlightDocSystem.Models
 {
     public class User
     {
-        public User() 
-        {
-            RefreshTokens = new HashSet<RefreshToken>();
-        }
-
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int UserID { get; set; }
@@ -31,7 +26,5 @@ namespace FlightDocSystem.Models
         public Role? Role { get; set; }
         [JsonIgnore]
         public Setting? Setting { get; set; }
-        [JsonIgnore]
-        public virtual ICollection<RefreshToken> RefreshTokens { get; set; }
     }  
 }

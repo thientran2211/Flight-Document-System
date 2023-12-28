@@ -1,14 +1,17 @@
 ﻿using FlightDocSystem.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace FlightDocSystem.DTO
 {
     public class FlightDTO
     {
-        public int FlightID { get; set; }
-        public string FlightName { get; set; } = string.Empty;
+        public string? FlightNo { get; set; }
+        [DataType(DataType.Date)]
+        public DateTime CreateDate { get; set; }
+        [DataType(DataType.Date)]
         public DateTime? DepartureTime { get; set; }
-        public DateTime? ArrivalTime { get; set; }
-        public string Route { get; set; } = string.Empty;
-        public int UserID { get; set; }
+        public string? PointOfLoading { get; set; }
+        public string? PointOfUnloading { get; set; }
+        public string? Route { get; set; }
     }
 }
